@@ -30,7 +30,9 @@ int main()
 {
     int Width = 600, Height = 600;
     
-    HWND Window = Win32CreateWindow(0, Width, Height, Win32MessageCallback);
+    HWND Window = Win32CreateWindow(0, Width, Height, 
+                                    "SDF Tracer", "SDFTracerWindowClass",
+                                    Win32MessageCallback);
     HDC WindowDC = GetDC(Window);
     
     int BytesPerpixel = 4;

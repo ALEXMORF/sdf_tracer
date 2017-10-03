@@ -101,14 +101,14 @@ Win32ToggleFullscreen(HWND Window)
 
 internal HWND
 Win32CreateWindow(HINSTANCE InstanceHandle, i32 WindowWidth, i32 WindowHeight,
-                  WNDPROC WindowProcedure)
+                  char *WindowName, char *WindowClassName, WNDPROC WindowProcedure)
 {
     WNDCLASS WindowClass = {};
     WindowClass.style = CS_OWNDC|CS_VREDRAW|CS_HREDRAW;
     WindowClass.lpfnWndProc = WindowProcedure;
     WindowClass.hInstance = InstanceHandle;
     WindowClass.hCursor = LoadCursor(0, IDC_ARROW);
-    WindowClass.lpszClassName = "MonterWindowClass";
+    WindowClass.lpszClassName = WindowClassName;
     RegisterClass(&WindowClass);
     
     DWORD WindowStyle = WS_VISIBLE|WS_OVERLAPPEDWINDOW;
@@ -131,8 +131,8 @@ Win32CreateWindow(HINSTANCE InstanceHandle, i32 WindowWidth, i32 WindowHeight,
     }
     
     HWND Window = CreateWindow(
-        "MonterWindowClass",
-        "Monter",
+        WindowClassName,
+        WindowName,
         WindowStyle, 
         WindowSize.left,
         WindowSize.top,
