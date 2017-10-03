@@ -190,6 +190,45 @@ SwapF32(f32 *A, f32 *B)
     *B = Temp;
 }
 
+inline v2i
+operator+(v2i A, v2i B)
+{
+    v2i Result = {A.X + B.X, A.Y + B.Y};
+    return Result;
+}
+
+inline v2i
+operator-(v2i A, v2i B)
+{
+    v2i Result = {A.X - B.X, A.Y - B.Y};
+    return Result;
+}
+
+inline v2i
+operator*(int S, v2i A)
+{
+    v2i Result = {A.X * S, A.Y * S};
+    return Result;
+}
+
+inline void
+operator+=(v2i &A, v2i B)
+{
+    A = A + B;
+}
+
+inline void
+operator-=(v2i &A, v2i B)
+{
+    A = A - B;
+}
+
+inline void
+operator*=(v2i &A, int B)
+{
+    A = B * A;
+}
+
 inline v2
 operator+(v2 A, v2 B)
 {
