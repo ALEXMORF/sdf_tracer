@@ -1,8 +1,14 @@
 /*
 TODO:
 
+(READ)
+. Read more about SDF rendering
+
+(CODE)
 . Handle screen aspect ratio
 . Time the loop properly and lock the framerate at 60FPS
+. Use transform matrices to transform meshes and reposition camera
+. Offload work onto GPU
 
 */
 
@@ -69,7 +75,7 @@ Render(u32 *ScreenBuffer, int Width, int Height)
             if (SignedDistanceToScene(ClosestP) < EPSILON)
             {
                 v3 Normal = Gradient(SignedDistanceToScene, ClosestP);
-                f32 Intensity = Clamp(Dot(Normal, -LightDir), 0.0f, 1.0f);
+                f32 Intensity = 0.1f + 0.9f * Clamp(Dot(Normal, -LightDir), 0.0f, 1.0f);
                 u8 Red = (u8)(255.0f * Intensity);
                 *Pixel++ = Red << 16;
             }
