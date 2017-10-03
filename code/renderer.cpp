@@ -5,6 +5,8 @@ TODO:
 
 */
 
+#include "kernel.h"
+
 internal void 
 Render(u32 *ScreenBuffer, int Width, int Height)
 {

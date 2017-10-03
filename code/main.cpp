@@ -1,4 +1,3 @@
-#include "kernel.h"
 #include "renderer.cpp"
 
 #include <windows.h>
