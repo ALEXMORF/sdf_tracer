@@ -39,6 +39,9 @@ internal void
 Render(u32 *ScreenBuffer, int Width, int Height)
 {
     v3 Camera = {0.0f, 0.0f, -5.0f};
+    local_persist quaternion LightDirRotation = Quaternion();
+    LightDirRotation = LightDirRotation * Quaternion(YAxis(), DegreeToRadian(3.0f));
+    v3 LightDir = Rotate(ZAxis(), LightDirRotation);
     
     u32 *Pixel = ScreenBuffer;
     
@@ -66,7 +69,7 @@ Render(u32 *ScreenBuffer, int Width, int Height)
             if (SignedDistanceToScene(ClosestP) < EPSILON)
             {
                 v3 Normal = Gradient(SignedDistanceToScene, ClosestP);
-                f32 Intensity = Dot(Normal, -ZAxis());
+                f32 Intensity = Clamp(Dot(Normal, -LightDir), 0.0f, 1.0f);
                 u8 Red = (u8)(255.0f * Intensity);
                 *Pixel++ = Red << 16;
             }

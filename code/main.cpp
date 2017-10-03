@@ -58,7 +58,7 @@ int main()
         StretchDIBits(WindowDC, 0, 0, Width, Height, 0, 0, Width, Height, 
                       BackBuffer, &BitmapInfo, DIB_RGB_COLORS, SRCCOPY);
         
-        Sleep(10);
+        Sleep(2);
     }
     
     return 0;
