@@ -5,8 +5,9 @@ TODO:
 . Read more about SDF rendering
 
 (CODE)
-. Handle screen aspect ratio
 . Time the loop properly and lock the framerate at 60FPS
+. Make it so that our simulation is frame-independent (with dT per frame)
+. Use the DLL hotloader
 . Use transform matrices to transform meshes and reposition camera
 . Offload work onto GPU
 
@@ -44,6 +45,8 @@ Gradient(signed_distance_function *Func, v3 P)
 internal void 
 Render(u32 *ScreenBuffer, int Width, int Height)
 {
+    float AspectRatio = (f32)Width / (f32)Height;
+    
     v3 Camera = {0.0f, 0.0f, -5.0f};
     local_persist quaternion LightDirRotation = Quaternion();
     LightDirRotation = LightDirRotation * Quaternion(YAxis(), DegreeToRadian(3.0f));
@@ -57,7 +60,7 @@ Render(u32 *ScreenBuffer, int Width, int Height)
         for (int X = 0; X < Width; ++X)
         {
             v3 ViewRay = {};
-            ViewRay.X = ((f32)X / (f32)Width) - 0.5f;
+            ViewRay.X = AspectRatio * (((f32)X / (f32)Width) - 0.5f);
             ViewRay.Y = ((f32)Y / (f32)Height) - 0.5f;
             ViewRay.Z = ViewPlaneDepth;
             ViewRay = Normalize(ViewRay);
@@ -75,9 +78,14 @@ Render(u32 *ScreenBuffer, int Width, int Height)
             if (SignedDistanceToScene(ClosestP) < EPSILON)
             {
                 v3 Normal = Gradient(SignedDistanceToScene, ClosestP);
-                f32 Intensity = 0.1f + 0.9f * Clamp(Dot(Normal, -LightDir), 0.0f, 1.0f);
-                u8 Red = (u8)(255.0f * Intensity);
-                *Pixel++ = Red << 16;
+                float Intensity = Clamp(Dot(Normal, -LightDir), 0.2f, 1.0f);
+                v3 Color = Intensity * V3(0.8f, 0.8f, 0.8f);
+                
+                u8 R = (u8)(255.0f * Color.X);
+                u8 G = (u8)(255.0f * Color.Y);
+                u8 B = (u8)(255.0f * Color.Z);
+                
+                *Pixel++ = (R << 16) | (G << 8) | B;
             }
             else
             {

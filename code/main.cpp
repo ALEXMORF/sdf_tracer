@@ -28,7 +28,7 @@ Win32MessageCallback(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 
 int main()
 {
-    int Width = 600, Height = 600;
+    int Width = 800, Height = 600;
     
     HWND Window = Win32CreateWindow(0, Width, Height, 
                                     "SDF Tracer", "SDFTracerWindowClass",
