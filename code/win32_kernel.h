@@ -145,3 +145,17 @@ Win32CreateWindow(HINSTANCE InstanceHandle, i32 WindowWidth, i32 WindowHeight,
     
     return Window;
 }
+
+internal void
+Win32BlitBufferToScreen(HDC WindowDC, void *Buffer, int Width, int Height)
+{
+    BITMAPINFO BitmapInfo = {};
+    BitmapInfo.bmiHeader.biSize = sizeof(BitmapInfo.bmiHeader);
+    BitmapInfo.bmiHeader.biWidth = Width;
+    BitmapInfo.bmiHeader.biHeight = Height;
+    BitmapInfo.bmiHeader.biPlanes = 1;
+    BitmapInfo.bmiHeader.biBitCount = 32;
+    BitmapInfo.bmiHeader.biCompression = BI_RGB;
+    StretchDIBits(WindowDC, 0, 0, Width, Height, 0, 0, Width, Height, 
+                  Buffer, &BitmapInfo, DIB_RGB_COLORS, SRCCOPY);
+}

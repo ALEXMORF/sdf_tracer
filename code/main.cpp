@@ -48,17 +48,7 @@ int main()
         }
         
         Render(BackBuffer, Width, Height);
-        
-        //blit it to the screen
-        BITMAPINFO BitmapInfo = {};
-        BitmapInfo.bmiHeader.biSize = sizeof(BitmapInfo.bmiHeader);
-        BitmapInfo.bmiHeader.biWidth = Width;
-        BitmapInfo.bmiHeader.biHeight = Height;
-        BitmapInfo.bmiHeader.biPlanes = 1;
-        BitmapInfo.bmiHeader.biBitCount = 32;
-        BitmapInfo.bmiHeader.biCompression = BI_RGB;
-        StretchDIBits(WindowDC, 0, 0, Width, Height, 0, 0, Width, Height, 
-                      BackBuffer, &BitmapInfo, DIB_RGB_COLORS, SRCCOPY);
+        Win32BlitBufferToScreen(WindowDC, BackBuffer, Width, Height);
         
         Sleep(2);
     }
