@@ -55,6 +55,7 @@ int main()
     u32 MemorySize = MB(64);
     void *Memory = Win32AllocateMemory(MemorySize);
     
+    f32 LastFrameTime = 0.0f;
     while (gGameIsRunning)
     {
         u64 BeginTime = Win32GetPerformanceCounter();
@@ -94,7 +95,8 @@ int main()
             }
         }
         
-        UpdateAndRender(Memory, MemorySize, gWindowWidth, gWindowHeight);
+        f32 dT = LastFrameTime / 1000.0f;
+        UpdateAndRender(Memory, MemorySize, gWindowWidth, gWindowHeight, dT);
         f32 FrameProcTime = Win32GetTimeElapsedInMS(BeginTime, Win32GetPerformanceCounter());
         
         SwapBuffers(WindowDC);
@@ -118,6 +120,8 @@ int main()
         snprintf(WindowTitle, sizeof(WindowTitle), "Proc Time: %.2fms, Frame Time: %.2fms", 
                  FrameProcTime, FrameElapsedTime);
         SetWindowText(Window, WindowTitle);
+        
+        LastFrameTime = FrameElapsedTime;
     }
     
     return 0;

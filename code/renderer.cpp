@@ -8,9 +8,7 @@ TODO:
 . Handle shader error
  . Hotload shader
  . Make it so that our simulation is frame-independent (with dT per frame)
-. Use the DLL hotloader
-. Use transform matrices to transform meshes and reposition camera
-. Offload work onto GPU
+. Use transform matrices to transform and reposition camera
 
 */
 
@@ -82,7 +80,7 @@ BuildShaderProgram(char *VertShaderPath, char *FragShaderPath)
 }
 
 internal void
-UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height)
+UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height, f32 dT)
 {
     ASSERT(sizeof(render_state) < MemorySize);
     render_state *RS = (render_state *)Memory;
@@ -91,6 +89,8 @@ UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height)
         RS->ScreenVAO = BuildScreenVAO();
         RS->ShaderProgram = BuildShaderProgram("../code/vert.glsl", 
                                                "../code/frag.glsl");
+        
+        RS->LightDirection = {0.0f, 0.0f, 1.0f};
         RS->IsInitialized = true;
     }
     
@@ -98,8 +98,12 @@ UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height)
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     
+    RS->LightDirection = Rotate(RS->LightDirection, 
+                                Quaternion(YAxis(), DegreeToRadian(30.0f * dT)));
+    
     glUseProgram(RS->ShaderProgram);
     glUploadVec2(RS->ShaderProgram, "ScreenSize", V2(Width, Height));
+    glUploadVec3(RS->ShaderProgram, "LightDirection", RS->LightDirection);
     glBindVertexArray(RS->ScreenVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
