@@ -5,8 +5,10 @@ TODO:
 . Read more about SDF rendering
 
 (CODE)
-. Write a shader building routine & hotload them
-. Time the loop properly and lock the framerate at 60FPS
+. Write a shader building routine 
+. Handle shader error
+ . Hotload shader
+ . Time the loop properly and lock the framerate at 60FPS
 . Make it so that our simulation is frame-independent (with dT per frame)
 . Use the DLL hotloader
 . Use transform matrices to transform meshes and reposition camera
