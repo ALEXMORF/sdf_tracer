@@ -30,7 +30,7 @@ LoadEntireFile(char *Path)
 internal GLuint
 ReadAndCompileShader(char *Path, GLenum Type)
 {
-    GLuint Shader = glCreateShader(GL_VERTEX_SHADER);
+    GLuint Shader = glCreateShader(Type);
     
     loaded_file Source = LoadEntireFile(Path);
     if (!Source.Data)
@@ -60,7 +60,27 @@ BuildShaderProgram(char *VertShaderPath, char *FragShaderPath)
     GLuint FragShader = ReadAndCompileShader(FragShaderPath, GL_FRAGMENT_SHADER);
     //TODO(Chen): link up to a program then delete & detach the shaders
     
-    return 0;
+    GLuint Program = glCreateProgram();
+    glAttachShader(Program, VertShader);
+    glAttachShader(Program, FragShader);
+    glLinkProgram(Program);
+    GLint ProgramLinked = 0;
+    glGetProgramiv(Program, GL_LINK_STATUS, &ProgramLinked);
+    if (ProgramLinked != GL_TRUE)
+    {
+        GLsizei ErrorMsgLength = 0;
+        GLchar ErrorMsg[1024];
+        glGetProgramInfoLog(Program, sizeof(ErrorMsg),
+                            &ErrorMsgLength, ErrorMsg);
+        ASSERT(!"Failed to link shaders");
+    }
+    
+    glDetachShader(Program, VertShader);
+    glDeleteShader(VertShader);
+    glDetachShader(Program, FragShader);
+    glDeleteShader(FragShader);
+    
+    return Program;
 }
 
 internal void
@@ -80,12 +100,10 @@ Render(void *Memory, u32 MemorySize, int Width, int Height)
     glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     
-    /* NOTE(Chen): commented out because shader is required to make this work
-    glUseShader(RS->ShaderProgram);
+    glUseProgram(RS->ShaderProgram);
     glBindVertexArray(RS->ScreenVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
-*/
 }
 
 /*
