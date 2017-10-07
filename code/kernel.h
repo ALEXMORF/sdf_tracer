@@ -9506,3 +9506,72 @@ BuildScreenVAO()
     
     return ScreenVAO;
 }
+inline void 
+glUploadVec2(GLuint ShaderProgram, char *UniformIdentifier, v2 V)
+{
+    GLuint UniformLoc = glGetUniformLocation(ShaderProgram, UniformIdentifier);
+    glUniform2fv(UniformLoc, 1, (GLfloat *)&V);
+}
+
+inline void 
+glUploadVec3(GLuint ShaderProgram, char *UniformIdentifier, v3 V)
+{
+    GLuint UniformLoc = glGetUniformLocation(ShaderProgram, UniformIdentifier);
+    glUniform3fv(UniformLoc, 1, (GLfloat *)&V);
+}
+
+inline void
+glUploadVec3Array(GLuint ShaderProgram, char *UniformIdentifier, v3 *V, int Count)
+{
+    GLuint UniformLoc = glGetUniformLocation(ShaderProgram, UniformIdentifier);
+    glUniform3fv(UniformLoc, Count, (GLfloat *)V);
+}
+
+inline void 
+glUploadVec4(GLuint ShaderProgram, char *UniformIdentifier, v4 V)
+{
+    GLuint UniformLoc = glGetUniformLocation(ShaderProgram, UniformIdentifier);
+    glUniform4fv(UniformLoc, 1, (GLfloat *)&V);
+}
+
+inline void 
+glUploadFloat(GLuint ShaderProgram, char *UniformIdentifier, f32 Float)
+{
+    GLuint UniformLoc = glGetUniformLocation(ShaderProgram, UniformIdentifier);
+    glUniform1f(UniformLoc, Float);
+}
+
+inline void
+glUploadBool32(GLuint ShaderProgram, char *UniformIdentifier, b32 Bool)
+{
+    GLint UniformLoc = glGetUniformLocation(ShaderProgram, UniformIdentifier);
+    glUniform1i(UniformLoc, Bool);
+}
+
+inline void
+glUploadMatrix4Array(GLuint ShaderProgram, char *UniformIdentifier, mat4 *Mat, i32 MatCount)
+{
+    GLint UniformLoc = glGetUniformLocation(ShaderProgram, UniformIdentifier);
+    glUniformMatrix4fv(UniformLoc, MatCount, GL_TRUE, (GLfloat *)Mat);
+}
+
+inline void
+glUploadMatrix4(GLuint ShaderProgram, char *UniformIdentifier, mat4 *Mat)
+{
+    GLint UniformLoc = glGetUniformLocation(ShaderProgram, UniformIdentifier);
+    glUniformMatrix4fv(UniformLoc, 1, GL_TRUE, (GLfloat *)Mat);
+}
+
+inline void
+glUploadInt32(GLuint ShaderProgram, char *UniformIdentifier, i32 Integer)
+{
+    GLint UniformLoc = glGetUniformLocation(ShaderProgram, UniformIdentifier);
+    glUniform1i(UniformLoc, Integer);
+}
+
+inline void
+glUploadUint32(GLuint ShaderProgram, char *UniformIdentifier, u32 UnsignedInteger)
+{
+    GLint UniformLoc = glGetUniformLocation(ShaderProgram, UniformIdentifier);
+    glUniform1ui(UniformLoc, UnsignedInteger);
+}

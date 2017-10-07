@@ -1,6 +1,7 @@
 #include "renderer.cpp"
 
 #include <windows.h>
+#include <stdio.h>
 #include "win32_kernel.h"
 
 global_variable b32 gGameIsRunning = true;
@@ -28,7 +29,9 @@ Win32MessageCallback(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 
 int main()
 {
-    int Width = 800, Height = 600;
+    int Width = 800; 
+    int Height = 600;
+    f32 MSPerFrame = 1000.0f / 60.0f;
     
     HWND Window = Win32CreateWindow(0, Width, Height, 
                                     "SDF Tracer", "SDFTracerWindowClass",
@@ -37,26 +40,48 @@ int main()
     Win32InitializeOpengl(WindowDC, 4, 0);
     LoadGLFunctions(Win32GetOpenglFunction);
     
+    //load platform functions back to global functions
+    ReadEntireFile = Win32ReadFileToMemory;
+    FreeFile = Win32FreeFileMemory;
+    
     u32 MemorySize = MB(64);
     void *Memory = Win32AllocateMemory(MemorySize);
     
-    MSG Message = {};
     while (gGameIsRunning)
     {
+        u64 BeginTime = Win32GetPerformanceCounter();
+        
+        MSG Message = {};
         while (PeekMessage(&Message, Window, 0, 0, PM_REMOVE))
         {
             TranslateMessage(&Message);
             DispatchMessage(&Message);
         }
         
-        //load platform functions back to global functions
-        ReadEntireFile = Win32ReadFileToMemory;
-        FreeFile = Win32FreeFileMemory;
+        UpdateAndRender(Memory, MemorySize, Width, Height);
+        f32 FrameProcTime = Win32GetTimeElapsedInMS(BeginTime, Win32GetPerformanceCounter());
         
-        Render(Memory, MemorySize, Width, Height);
         SwapBuffers(WindowDC);
         
-        Sleep(2);
+        f32 FrameElapsedTime = Win32GetTimeElapsedInMS(BeginTime, Win32GetPerformanceCounter());
+        if (FrameElapsedTime < MSPerFrame)
+        {
+            Sleep((LONG)(MSPerFrame - FrameElapsedTime));
+            do
+            {
+                FrameElapsedTime = Win32GetTimeElapsedInMS(BeginTime, Win32GetPerformanceCounter());
+            } 
+            while (FrameElapsedTime < MSPerFrame);
+        }
+        else
+        {
+            Sleep(1); //sleep anyway
+        }
+        
+        char WindowTitle[100];
+        snprintf(WindowTitle, sizeof(WindowTitle), "Proc Time: %.2fms, Frame Time: %.2fms", 
+                 FrameProcTime, FrameElapsedTime);
+        SetWindowText(Window, WindowTitle);
     }
     
     return 0;
