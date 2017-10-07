@@ -5,6 +5,8 @@
 #include "win32_kernel.h"
 
 global_variable b32 gGameIsRunning = true;
+global_variable int gWindowWidth;
+global_variable int gWindowHeight;
 
 LRESULT CALLBACK
 Win32MessageCallback(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
@@ -18,6 +20,12 @@ Win32MessageCallback(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
             gGameIsRunning = false;
         } break;
         
+        case WM_SIZE:
+        {
+            gWindowWidth = LOWORD(LParam);
+            gWindowHeight = HIWORD(LParam);
+        } break;
+        
         default:
         {
             Result = DefWindowProc(Window, Message, WParam, LParam);
@@ -29,11 +37,11 @@ Win32MessageCallback(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 
 int main()
 {
-    int Width = 800; 
-    int Height = 600;
+    gWindowWidth = 800; 
+    gWindowHeight = 600;
     f32 MSPerFrame = 1000.0f / 60.0f;
     
-    HWND Window = Win32CreateWindow(0, Width, Height, 
+    HWND Window = Win32CreateWindow(0, gWindowWidth, gWindowHeight, 
                                     "SDF Tracer", "SDFTracerWindowClass",
                                     Win32MessageCallback);
     HDC WindowDC = GetDC(Window);
@@ -54,11 +62,39 @@ int main()
         MSG Message = {};
         while (PeekMessage(&Message, Window, 0, 0, PM_REMOVE))
         {
-            TranslateMessage(&Message);
-            DispatchMessage(&Message);
+            switch (Message.message)
+            {
+                case WM_KEYDOWN:
+                case WM_SYSKEYDOWN:
+                case WM_KEYUP:
+                case WM_SYSKEYUP:
+                {
+                    b32 KeyDown = (Message.lParam & (1 << 31)) == 0;
+                    b32 KeyWasUp = (Message.lParam & (1 << 30)) == 0;
+                    b32 AltKeyDown = (Message.lParam & (1 << 29)) != 0;
+                    
+                    if (KeyDown && KeyWasUp)
+                    {
+                        if (AltKeyDown && Message.wParam == VK_RETURN)
+                        {
+                            Win32ToggleFullscreen(Window);
+                        }
+                        if (Message.wParam == VK_ESCAPE)
+                        {
+                            gGameIsRunning = false;
+                        }
+                    }
+                } break;
+                
+                default:
+                {
+                    TranslateMessage(&Message);
+                    DispatchMessage(&Message);
+                } break;
+            }
         }
         
-        UpdateAndRender(Memory, MemorySize, Width, Height);
+        UpdateAndRender(Memory, MemorySize, gWindowWidth, gWindowHeight);
         f32 FrameProcTime = Win32GetTimeElapsedInMS(BeginTime, Win32GetPerformanceCounter());
         
         SwapBuffers(WindowDC);
