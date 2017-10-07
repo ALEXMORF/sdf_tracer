@@ -159,3 +159,96 @@ Win32BlitBufferToScreen(HDC WindowDC, void *Buffer, int Width, int Height)
     StretchDIBits(WindowDC, 0, 0, Width, Height, 0, 0, Width, Height, 
                   Buffer, &BitmapInfo, DIB_RGB_COLORS, SRCCOPY);
 }
+
+void *
+Win32GetOpenglFunction(char *FunctionName)
+{
+    void *Result = 0;
+    Result = (void *)wglGetProcAddress(FunctionName);
+    if (Result == 0 || (Result == (void *)0x1) || (Result == (void *)0x2)
+        || (Result == (void *)0x3) || (Result == (void *)-1))
+    {
+        HMODULE OpenglLibrary = LoadLibraryA("opengl32.dll");
+        Result = (void *)GetProcAddress(OpenglLibrary, FunctionName);
+        FreeLibrary(OpenglLibrary);
+    }
+    
+    return Result;
+}
+
+//WGL extension tokens
+#define WGL_CONTEXT_MAJOR_VERSION_ARB           0x2091
+#define WGL_CONTEXT_MINOR_VERSION_ARB           0x2092
+#define WGL_CONTEXT_LAYER_PLANE_ARB             0x2093
+#define WGL_CONTEXT_FLAGS_ARB                   0x2094
+#define WGL_CONTEXT_PROFILE_MASK_ARB            0x9126
+#define WGL_CONTEXT_DEBUG_BIT_ARB               0x0001
+#define WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB  0x0002
+#define WGL_CONTEXT_CORE_PROFILE_BIT_ARB        0x00000001
+#define WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB 0x00000002
+#define ERROR_INVALID_VERSION_ARB               0x2095
+#define ERROR_INVALID_PROFILE_ARB               0x2096
+#define WGL_SAMPLE_BUFFERS_ARB                  0x2041
+#define WGL_SAMPLES_ARB                         0x2042
+
+typedef BOOL WINAPI wgl_swap_interval_ext(int Interval);
+typedef HGLRC WINAPI wgl_create_context_attribs_arb(HDC hDC, HGLRC hshareContext, const int *attribList);
+
+//NOTE(chen): disable warning 4706
+#pragma warning(push)
+#pragma warning(disable: 4706)
+internal b32
+Win32InitializeOpengl(HDC WindowDC, int MajorVersion, int MinorVersion)
+{
+    PIXELFORMATDESCRIPTOR DesiredPixelFormat = {};
+    DesiredPixelFormat.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+    DesiredPixelFormat.nVersion = 1;
+    DesiredPixelFormat.dwFlags = PFD_DRAW_TO_WINDOW|PFD_SUPPORT_OPENGL|PFD_DOUBLEBUFFER;
+    DesiredPixelFormat.iPixelType = PFD_TYPE_RGBA;
+    DesiredPixelFormat.cColorBits = 32;
+    DesiredPixelFormat.cStencilBits = 8;
+    
+    int SuggestedPixelFormatIndex = ChoosePixelFormat(WindowDC, &DesiredPixelFormat);
+    PIXELFORMATDESCRIPTOR SuggestedPixelFormat;
+    DescribePixelFormat(WindowDC, SuggestedPixelFormatIndex, sizeof(PIXELFORMATDESCRIPTOR), &SuggestedPixelFormat);
+    SetPixelFormat(WindowDC, SuggestedPixelFormatIndex, &SuggestedPixelFormat);
+    
+    HGLRC Win32RenderContext = wglCreateContext(WindowDC);
+    if (!wglMakeCurrent(WindowDC, Win32RenderContext))
+    {
+        ASSERT(!"Failed to make opengl 1.0 context current");
+    }
+    
+    //NOTE(Chen): Probably the extensions u wanna get, but I comment it out here
+#if 0
+    wglSwapInterval = (wgl_swap_interval_ext *)wglGetProcAddress("wglSwapIntervalEXT");
+    ASSERT(wglSwapInterval);
+#endif
+    
+    wgl_create_context_attribs_arb *wglCreateContextAttribsARB = (wgl_create_context_attribs_arb *)wglGetProcAddress("wglCreateContextAttribsARB");
+    ASSERT(wglCreateContextAttribsARB);
+    
+    //unblind current context
+    wglMakeCurrent(WindowDC, 0);
+    wglDeleteContext(Win32RenderContext);
+    
+    //make a new render context
+    i32 AttributeList[] = {
+        WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB,
+        WGL_CONTEXT_MAJOR_VERSION_ARB, MajorVersion,
+        WGL_CONTEXT_MINOR_VERSION_ARB, MinorVersion,
+        WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+        0,
+    };
+    Win32RenderContext = wglCreateContextAttribsARB(WindowDC, 0, AttributeList);
+    if (Win32RenderContext)
+    {
+        if (wglMakeCurrent(WindowDC, Win32RenderContext) == TRUE)
+        {
+            return true;
+        }
+    }
+    
+    return false;
+}
+#pragma warning(pop)
