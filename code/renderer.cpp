@@ -5,6 +5,7 @@ TODO:
 . Read more about SDF rendering
 
 (CODE)
+. Write a shader building routine
 . Time the loop properly and lock the framerate at 60FPS
 . Make it so that our simulation is frame-independent (with dT per frame)
 . Use the DLL hotloader
@@ -15,6 +16,21 @@ TODO:
 
 #include "kernel.h"
 
+internal void
+Render(int Width, int Height)
+{
+    glViewport(0, 0, Width, Height);
+    glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    /* NOTE(Chen): commented out because shader is required to make this work
+    glBindVertexArray(ScreenVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+*/
+}
+
+/*
 const f32 EPSILON = 0.001f;
 const i32 MAX_MARCH_STEP = 100;
 const f32 MAX_DEPTH = 50.0f;
@@ -94,3 +110,4 @@ Render(u32 *ScreenBuffer, int Width, int Height)
         }
     }
 }
+*/

@@ -9468,3 +9468,41 @@ void LoadGLFunctions(load_function *LoadFunction) {
 }
 
 #endif
+
+//
+//
+//@ OpenGL helper functions
+
+inline GLuint
+BuildScreenVAO()
+{
+    GLuint ScreenVAO = 0;
+    glGenVertexArrays(1, &ScreenVAO);
+    GLuint Result = 0;
+    
+    GLuint QuadVBO = 0;
+    glGenBuffers(1, &QuadVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, QuadVBO);
+    f32 QuadVertices[] = {
+        //position          screen tex coord
+        1.0f, 1.0f, 0.0f,   1.0f, 1.0f,
+        -1.0f, 1.0f, 0.0f,  0.0f, 1.0f,
+        1.0f, -1.0f, 0.0f,  1.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f,  0.0f, 1.0f,
+        -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,  1.0f, 0.0f,
+    };
+    glBufferData(GL_ARRAY_BUFFER, ARRAY_COUNT(QuadVertices) * sizeof(f32), (GLvoid *)QuadVertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    glBindVertexArray(ScreenVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, QuadVBO);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), 0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), (GLvoid *)(3 * sizeof(f32)));
+    glEnableVertexAttribArray(4);
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    return ScreenVAO;
+}

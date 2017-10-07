@@ -37,8 +37,7 @@ int main()
     Win32InitializeOpengl(WindowDC, 4, 0);
     LoadGLFunctions(Win32GetOpenglFunction);
     
-    int BytesPerpixel = 4;
-    u32 *BackBuffer = (u32 *)Win32AllocateMemory(Width * Height * BytesPerpixel);
+    GLuint ScreenVAO = BuildScreenVAO();
     
     MSG Message = {};
     while (gGameIsRunning)
@@ -49,13 +48,8 @@ int main()
             DispatchMessage(&Message);
         }
         
-        glViewport(0, 0, Width, Height);
-        glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        Render(Width, Height);
         SwapBuffers(WindowDC);
-        
-        //Render(BackBuffer, Width, Height);
-        //Win32BlitBufferToScreen(WindowDC, BackBuffer, Width, Height);
         
         Sleep(2);
     }
