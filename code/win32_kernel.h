@@ -69,6 +69,44 @@ Win32AllocateMemory(size_t MemorySize)
     return VirtualAlloc(0, MemorySize, MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
 }
 
+char *
+Win32ReadFileToMemory(char *Filename, u64 *MemorySize)
+{
+    char *Result = 0;
+    
+    HANDLE FileHandle = CreateFile(Filename, GENERIC_READ, 0, 0, OPEN_EXISTING, 0, 0);
+    if (FileHandle != INVALID_HANDLE_VALUE)
+    {
+        LARGE_INTEGER FileSize = {};
+        GetFileSizeEx(FileHandle, &FileSize);
+        
+        *MemorySize = (size_t)FileSize.QuadPart;
+        Result = (char *)VirtualAlloc(0, (size_t)FileSize.QuadPart, MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
+        
+        DWORD NumberOfBytesRead;
+        if (ReadFile(FileHandle, Result, (DWORD)FileSize.QuadPart, &NumberOfBytesRead, 0))
+        {
+            //NOTE(chen): succeeds
+        }
+        else
+        {
+            //NOTE(chen): failed to read file, reset memory to ground zero
+            *MemorySize = 0;
+            VirtualFree(Result, 0, MEM_RELEASE);
+        }
+        
+        CloseHandle(FileHandle);
+    }
+    
+    return Result;
+}
+
+void
+Win32FreeFileMemory(void *Memory)
+{
+    VirtualFree(Memory, 0, MEM_RELEASE);
+}
+
 global_variable WINDOWPLACEMENT GlobalWindowPosition;
 internal void
 Win32ToggleFullscreen(HWND Window)

@@ -37,7 +37,8 @@ int main()
     Win32InitializeOpengl(WindowDC, 4, 0);
     LoadGLFunctions(Win32GetOpenglFunction);
     
-    GLuint ScreenVAO = BuildScreenVAO();
+    u32 MemorySize = MB(64);
+    void *Memory = Win32AllocateMemory(MemorySize);
     
     MSG Message = {};
     while (gGameIsRunning)
@@ -48,7 +49,11 @@ int main()
             DispatchMessage(&Message);
         }
         
-        Render(Width, Height);
+        //load platform functions back to global functions
+        ReadEntireFile = Win32ReadFileToMemory;
+        FreeFile = Win32FreeFileMemory;
+        
+        Render(Memory, MemorySize, Width, Height);
         SwapBuffers(WindowDC);
         
         Sleep(2);

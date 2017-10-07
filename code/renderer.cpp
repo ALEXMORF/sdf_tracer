@@ -5,7 +5,7 @@ TODO:
 . Read more about SDF rendering
 
 (CODE)
-. Write a shader building routine
+. Write a shader building routine & hotload them
 . Time the loop properly and lock the framerate at 60FPS
 . Make it so that our simulation is frame-independent (with dT per frame)
 . Use the DLL hotloader
@@ -15,16 +15,72 @@ TODO:
 */
 
 #include "kernel.h"
+#include "renderer.h"
+
+inline loaded_file
+LoadEntireFile(char *Path)
+{
+    loaded_file Result = {};
+    Result.Data = ReadEntireFile(Path, &Result.Size);
+    return Result;
+}
+
+internal GLuint
+ReadAndCompileShader(char *Path, GLenum Type)
+{
+    GLuint Shader = glCreateShader(GL_VERTEX_SHADER);
+    
+    loaded_file Source = LoadEntireFile(Path);
+    if (!Source.Data)
+    {
+        ASSERT(!"Can't find file");
+    }
+    glShaderSource(Shader, 1, &Source.Data, 0);
+    glCompileShader(Shader);
+    GLint CompileStatus = 0;
+    glGetShaderiv(Shader, GL_COMPILE_STATUS, &CompileStatus);
+    if (CompileStatus != GL_TRUE)
+    {
+        GLsizei ErrorMsgLength = 0;
+        GLchar ErrorMsg[1024];
+        glGetShaderInfoLog(Shader, sizeof(ErrorMsg), 
+                           &ErrorMsgLength, ErrorMsg);
+        ASSERT(!"fail to compile vertex shader");
+    }
+    
+    return Shader;
+}
+
+internal GLuint
+BuildShaderProgram(char *VertShaderPath, char *FragShaderPath)
+{
+    GLuint VertShader = ReadAndCompileShader(VertShaderPath, GL_VERTEX_SHADER);
+    GLuint FragShader = ReadAndCompileShader(FragShaderPath, GL_FRAGMENT_SHADER);
+    //TODO(Chen): link up to a program then delete & detach the shaders
+    
+    return 0;
+}
 
 internal void
-Render(int Width, int Height)
+Render(void *Memory, u32 MemorySize, int Width, int Height)
 {
+    ASSERT(sizeof(render_state) < MemorySize);
+    render_state *RS = (render_state *)Memory;
+    if (!RS->IsInitialized)
+    {
+        RS->ScreenVAO = BuildScreenVAO();
+        RS->ShaderProgram = BuildShaderProgram("../code/vert.glsl", 
+                                               "../code/frag.glsl");
+        RS->IsInitialized = true;
+    }
+    
     glViewport(0, 0, Width, Height);
     glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     
     /* NOTE(Chen): commented out because shader is required to make this work
-    glBindVertexArray(ScreenVAO);
+    glUseShader(RS->ShaderProgram);
+    glBindVertexArray(RS->ScreenVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
 */
