@@ -9,6 +9,7 @@ TODO:
  . Hotload shader
  
 (CODE)
+. why does View matrix has to be inversed??
 . Lift view-ray computation up to vertex shader???
 
 */
@@ -105,11 +106,6 @@ UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height,
     if (Input->Down) RS->CameraP.Y -= MoveSpeed;
     
     glViewport(0, 0, Width, Height);
-    //NOTE(Chen): doesn't have to clear
-#if 0
-    glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-#endif
     
     RS->LightDirection = Rotate(RS->LightDirection, 
                                 Quaternion(YAxis(), DegreeToRadian(90.0f * dT)));
