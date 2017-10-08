@@ -11,6 +11,8 @@ TODO:
 (CODE)
 . why does View matrix has to be inversed??
 . Lift view-ray computation up to vertex shader???
+. Add in plane as object
+. Global illumination with monte carl integration
 
 */
 
