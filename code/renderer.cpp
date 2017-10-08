@@ -9,7 +9,7 @@ TODO:
  . Hotload shader
  
 (CODE)
-. Use transform matrices to transform and reposition camera
+. Lift view-ray computation up to vertex shader???
 
 */
 
@@ -108,10 +108,8 @@ UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height,
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     
-#if 0 
     RS->LightDirection = Rotate(RS->LightDirection, 
-                                Quaternion(YAxis(), DegreeToRadian(30.0f * dT)));
-#endif
+                                Quaternion(YAxis(), DegreeToRadian(5.0f * dT)));
     
     mat4 ViewRotation = Mat4LookAt(RS->CameraP, {});
     ViewRotation.Data[3][0] = 0.0f;
