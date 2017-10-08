@@ -105,11 +105,14 @@ UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height,
     if (Input->Down) RS->CameraP.Y -= MoveSpeed;
     
     glViewport(0, 0, Width, Height);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    //NOTE(Chen): doesn't have to clear
+#if 0
+    glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+#endif
     
     RS->LightDirection = Rotate(RS->LightDirection, 
-                                Quaternion(YAxis(), DegreeToRadian(5.0f * dT)));
+                                Quaternion(YAxis(), DegreeToRadian(90.0f * dT)));
     
     mat4 ViewRotation = Mat4LookAt(RS->CameraP, {});
     ViewRotation.Data[3][0] = 0.0f;
