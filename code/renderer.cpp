@@ -4,10 +4,11 @@ TODO:
 (READ)
 . Read more about SDF rendering
 
-(CODE)
+(WORKFLOW)
 . Handle shader error
  . Hotload shader
- . Make it so that our simulation is frame-independent (with dT per frame)
+ 
+(CODE)
 . Use transform matrices to transform and reposition camera
 
 */
@@ -80,7 +81,8 @@ BuildShaderProgram(char *VertShaderPath, char *FragShaderPath)
 }
 
 internal void
-UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height, f32 dT)
+UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height, 
+                input *Input, f32 dT)
 {
     ASSERT(sizeof(render_state) < MemorySize);
     render_state *RS = (render_state *)Memory;
@@ -91,19 +93,37 @@ UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height, f32 dT)
                                                "../code/frag.glsl");
         
         RS->LightDirection = {0.0f, 0.0f, 1.0f};
+        RS->CameraP = {0.0f, 0.0f, -3.0f};
+        
         RS->IsInitialized = true;
     }
+    
+    f32 MoveSpeed = 1.0f * dT;
+    if (Input->Left) RS->CameraP.X -= MoveSpeed;
+    if (Input->Right) RS->CameraP.X += MoveSpeed;
+    if (Input->Up) RS->CameraP.Y += MoveSpeed;
+    if (Input->Down) RS->CameraP.Y -= MoveSpeed;
     
     glViewport(0, 0, Width, Height);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     
+#if 0 
     RS->LightDirection = Rotate(RS->LightDirection, 
                                 Quaternion(YAxis(), DegreeToRadian(30.0f * dT)));
+#endif
+    
+    mat4 ViewRotation = Mat4LookAt(RS->CameraP, {});
+    ViewRotation.Data[3][0] = 0.0f;
+    ViewRotation.Data[3][1] = 0.0f;
+    ViewRotation.Data[3][2] = 0.0f;
     
     glUseProgram(RS->ShaderProgram);
     glUploadVec2(RS->ShaderProgram, "ScreenSize", V2(Width, Height));
     glUploadVec3(RS->ShaderProgram, "LightDirection", RS->LightDirection);
+    glUploadVec3(RS->ShaderProgram, "CameraP", RS->CameraP);
+    glUploadMatrix4(RS->ShaderProgram, "ViewRotation", &ViewRotation);
+    
     glBindVertexArray(RS->ScreenVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);

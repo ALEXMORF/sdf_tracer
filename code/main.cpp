@@ -47,6 +47,9 @@ int main()
     HDC WindowDC = GetDC(Window);
     Win32InitializeOpengl(WindowDC, 4, 0);
     LoadGLFunctions(Win32GetOpenglFunction);
+    wgl_swap_interval_ext *SwapInterval = (wgl_swap_interval_ext *)Win32GetOpenglFunction("wglSwapIntervalEXT");
+    ASSERT(SwapInterval);
+    SwapInterval(true);
     
     //load platform functions back to global functions
     ReadEntireFile = Win32ReadFileToMemory;
@@ -54,6 +57,7 @@ int main()
     
     u32 MemorySize = MB(64);
     void *Memory = Win32AllocateMemory(MemorySize);
+    input Input = {};
     
     f32 LastFrameTime = 0.0f;
     while (gGameIsRunning)
@@ -71,10 +75,10 @@ int main()
                 case WM_SYSKEYUP:
                 {
                     b32 KeyDown = (Message.lParam & (1 << 31)) == 0;
-                    b32 KeyWasUp = (Message.lParam & (1 << 30)) == 0;
+                    b32 KeyWasDown = (Message.lParam & (1 << 30)) != 0;
                     b32 AltKeyDown = (Message.lParam & (1 << 29)) != 0;
                     
-                    if (KeyDown && KeyWasUp)
+                    if (KeyDown && !KeyWasDown)
                     {
                         if (AltKeyDown && Message.wParam == VK_RETURN)
                         {
@@ -84,6 +88,14 @@ int main()
                         {
                             gGameIsRunning = false;
                         }
+                    }
+                    
+                    if (KeyDown != KeyWasDown)
+                    {
+                        if (Message.wParam == 'A') Input.Left = KeyDown;
+                        if (Message.wParam == 'D') Input.Right = KeyDown;
+                        if (Message.wParam == 'W') Input.Up = KeyDown;
+                        if (Message.wParam == 'S') Input.Down = KeyDown;
                     }
                 } break;
                 
@@ -96,7 +108,7 @@ int main()
         }
         
         f32 dT = LastFrameTime / 1000.0f;
-        UpdateAndRender(Memory, MemorySize, gWindowWidth, gWindowHeight, dT);
+        UpdateAndRender(Memory, MemorySize, gWindowWidth, gWindowHeight, &Input, dT);
         f32 FrameProcTime = Win32GetTimeElapsedInMS(BeginTime, Win32GetPerformanceCounter());
         
         SwapBuffers(WindowDC);
