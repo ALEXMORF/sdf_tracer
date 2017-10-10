@@ -1,6 +1,7 @@
 enum shape_type
 {
-    SHAPE_TYPE_SPHERE,
+    SHAPE_TYPE_SPHERE = 0,
+    SHAPE_TYPE_PLANE,
     SHAPE_TYPE_COUNT,
 };
 
@@ -15,6 +16,12 @@ struct shape
             v3 P;
             f32 Radius;
         } AsSphere;
+        
+        struct
+        {
+            v3 P;
+            v3 Normal;
+        } AsPlane;
     };
 };
 

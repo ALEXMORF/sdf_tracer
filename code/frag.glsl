@@ -1,8 +1,14 @@
 #version 400 core
 
+#define SHAPE_TYPE_SPHERE 0
+#define SHAPE_TYPE_PLANE  1
+
 struct shape
 {
+    int Type;
+    
     vec3 P;
+    vec3 Normal;
     float Radius;
 };
 
@@ -30,8 +36,18 @@ float SignedDistanceToScene(vec3 P)
     
     for (int ShapeIndex = 0; ShapeIndex < ShapeCount; ++ShapeIndex)
     {
-        float DistanceToShape = (distance(P, Shapes[ShapeIndex].P) - 
-                                 Shapes[ShapeIndex].Radius);
+        float DistanceToShape = 0.0f;
+        
+        if (Shapes[ShapeIndex].Type == SHAPE_TYPE_SPHERE)
+        {
+            DistanceToShape = (distance(P, Shapes[ShapeIndex].P) - 
+                               Shapes[ShapeIndex].Radius);
+        }
+        else if (Shapes[ShapeIndex].Type == SHAPE_TYPE_PLANE)
+        {
+            DistanceToShape = dot((P - Shapes[ShapeIndex].P), Shapes[ShapeIndex].Normal);
+        }
+        
         if (DistanceToShape < MinDistance)
         {
             MinDistance = DistanceToShape;
@@ -80,7 +96,7 @@ void main()
     if (RayHit)
     {
         vec3 Normal = Gradient(CameraP + Depth * ViewRay);
-        float Intensity = 0.2 + 0.8*max(dot(Normal, -LightDirection), 0.0);
+        float Intensity = 0.3 + 0.7*max(dot(Normal, -LightDirection), 0.0);
         vec3 Color = vec3(1.0, 0.0, 0.0) * Intensity;
         OutColor = vec4(Color, 1.0);
     }
