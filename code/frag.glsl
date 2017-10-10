@@ -80,7 +80,7 @@ void main()
     if (RayHit)
     {
         vec3 Normal = Gradient(CameraP + Depth * ViewRay);
-        float Intensity = max(dot(Normal, -LightDirection), 0.0);
+        float Intensity = 0.2 + 0.8*max(dot(Normal, -LightDirection), 0.0);
         vec3 Color = vec3(1.0, 0.0, 0.0) * Intensity;
         OutColor = vec4(Color, 1.0);
     }

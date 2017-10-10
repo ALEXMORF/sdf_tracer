@@ -108,10 +108,18 @@ UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height,
     if (Input->Up) GameState->CameraP.Y += MoveSpeed;
     if (Input->Down) GameState->CameraP.Y -= MoveSpeed;
     
+    
+    local_persist f32 Time = 0.0f;
+    Time += dT;
+    
     BeginRender(&GameState->Renderer, Width, Height, 
                 GameState->CameraP, GameState->LightDirection);
-    DrawSphere(&GameState->Renderer, V3(0.0f, 0.0f, 0.0f), 1.0f);
-    DrawSphere(&GameState->Renderer, V3(2.5f, 0.0f, 0.0f), 1.0f);
+    f32 SphereSize = 1.0f + 0.1f*sinf(5.0f*Time);
+    DrawSphere(&GameState->Renderer, V3(0.0f, 0.0f, 0.0f), SphereSize);
+    DrawSphere(&GameState->Renderer, V3(1.0f, 0.0f, 0.0f), SphereSize);
+    DrawSphere(&GameState->Renderer, V3(-1.0f, 0.0f, 0.0f), SphereSize);
+    DrawSphere(&GameState->Renderer, V3(0.0f, 1.0f, 0.0f), SphereSize);
+    DrawSphere(&GameState->Renderer, V3(0.0f, -1.0f, 0.0f), SphereSize);
     EndRender(&GameState->Renderer);
     
     glFinish(); //force opengl sychronize to measure performance
