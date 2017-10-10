@@ -1,4 +1,6 @@
-#include "renderer.cpp"
+#include <stdio.h>
+
+#include "game.cpp"
 
 #include <windows.h>
 #include <stdio.h>
