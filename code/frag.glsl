@@ -29,7 +29,7 @@ out vec4 OutColor;
 const float FOV = 45.0;
 const float HFOV = FOV * 0.5;
 
-const float EPSILON = 0.001;
+const float EPSILON = 0.0001;
 const float MAX_MARCH_STEP = 200;
 const float MAX_DEPTH = 20;
 
@@ -133,14 +133,31 @@ void main()
     if (RayHit)
     {
         vec3 HitP = CameraP + Depth * ViewRay;
+        
+        vec3 LightP = HitP - LightDirection * 5.0f;
+        float Visibility = 0.0f;
+        float LightDepth = 0.0;
+        for (int I = 0; I < MAX_MARCH_STEP && Depth < MAX_DEPTH; ++I)
+        {
+            distance_info DistInfo = SignedDistanceToScene(LightP + LightDepth * LightDirection);
+            if (DistInfo.Dist < EPSILON)
+            {
+                break;
+            }
+            LightDepth += DistInfo.Dist;
+        }
+        if (distance(LightP + LightDepth * LightDirection, HitP) <= EPSILON*10.0)
+        {
+            Visibility= 1.0f;
+        }
+        
         vec3 Normal = Gradient(HitP);
         float AOFactor = GetOcclusionFactor(HitP, Normal);
-        float Intensity = AOFactor * (0.3 + 0.7*max(dot(Normal, -LightDirection), 0.0));
+        float Intensity = AOFactor * (0.3 + Visibility * 0.7*max(dot(Normal, -LightDirection), 0.0));
         vec3 Color = RayColor * Intensity;
         
         //blend with sky color to emulate fog
         float DepthPercent = (MAX_DEPTH - Depth) / MAX_DEPTH;
-        
         OutColor = (DepthPercent * vec4(Color, 1.0) + 
                     (1.0 - DepthPercent) * vec4(SkyColor, 1.0));
     }

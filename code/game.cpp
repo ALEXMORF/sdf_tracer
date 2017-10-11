@@ -34,7 +34,7 @@ UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height,
             "../code/vert.glsl", 
             "../code/frag.glsl");
         
-        GameState->LightDirection = Normalize(V3(0.3f, -0.5f, 0.7f));
+        GameState->LightDirection = Normalize(V3(-0.3f, -0.5f, 0.7f));
         GameState->CameraP = {-2.0f, 3.0f, -5.0f};
         
         GameState->IsInitialized = true;
