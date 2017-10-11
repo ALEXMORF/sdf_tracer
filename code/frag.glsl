@@ -134,10 +134,11 @@ void main()
     {
         vec3 HitP = CameraP + Depth * ViewRay;
         
+        //compute shadow (visibility)
+        float Shadow = 1.0f;
         vec3 LightP = HitP - LightDirection * 5.0f;
-        float Visibility = 0.0f;
         float LightDepth = 0.0;
-        for (int I = 0; I < MAX_MARCH_STEP && Depth < MAX_DEPTH; ++I)
+        for (int I = 0; I < MAX_MARCH_STEP && LightDepth < MAX_DEPTH; ++I)
         {
             distance_info DistInfo = SignedDistanceToScene(LightP + LightDepth * LightDirection);
             if (DistInfo.Dist < EPSILON)
@@ -146,14 +147,14 @@ void main()
             }
             LightDepth += DistInfo.Dist;
         }
-        if (distance(LightP + LightDepth * LightDirection, HitP) <= EPSILON*10.0)
+        if (distance(LightP + LightDepth * LightDirection, HitP) <= EPSILON*100.0)
         {
-            Visibility= 1.0f;
+            Shadow = 0.0f;
         }
         
         vec3 Normal = Gradient(HitP);
         float AOFactor = GetOcclusionFactor(HitP, Normal);
-        float Intensity = AOFactor * (0.3 + Visibility * 0.7*max(dot(Normal, -LightDirection), 0.0));
+        float Intensity = AOFactor * (0.3 + (1.0-Shadow) * 0.7*max(dot(Normal, -LightDirection), 0.0));
         vec3 Color = RayColor * Intensity;
         
         //blend with sky color to emulate fog
