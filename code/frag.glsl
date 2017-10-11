@@ -31,7 +31,7 @@ const float HFOV = FOV * 0.5;
 
 const float EPSILON = 0.001;
 const float MAX_MARCH_STEP = 200;
-const float MAX_DEPTH = 100;
+const float MAX_DEPTH = 20;
 
 struct distance_info
 {
@@ -106,6 +106,7 @@ GetOcclusionFactor(vec3 P, vec3 Normal)
 void main()
 {
     vec3 LightDir = vec3(0.0, 0.0, 1.0);
+    vec3 SkyColor = vec3(0.0, 0.0, 0.0);
     
     vec3 ViewRay;
     ViewRay.x = (ScreenSize.x / ScreenSize.y) * (FragTexCoord.x - 0.5);
@@ -136,10 +137,15 @@ void main()
         float AOFactor = GetOcclusionFactor(HitP, Normal);
         float Intensity = AOFactor * (0.3 + 0.7*max(dot(Normal, -LightDirection), 0.0));
         vec3 Color = RayColor * Intensity;
-        OutColor = vec4(Color, 1.0);
+        
+        //blend with sky color to emulate fog
+        float DepthPercent = (MAX_DEPTH - Depth) / MAX_DEPTH;
+        
+        OutColor = (DepthPercent * vec4(Color, 1.0) + 
+                    (1.0 - DepthPercent) * vec4(SkyColor, 1.0));
     }
     else
     {
-        OutColor = vec4(0.0, 1.0, 1.0, 1.0);
+        OutColor = vec4(SkyColor, 1.0);
     }
 }
