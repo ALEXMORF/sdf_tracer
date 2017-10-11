@@ -29,7 +29,7 @@ out vec4 OutColor;
 const float FOV = 45.0;
 const float HFOV = FOV * 0.5;
 
-const float EPSILON = 0.0001;
+const float EPSILON = 0.001;
 const float MAX_MARCH_STEP = 200;
 const float MAX_DEPTH = 20;
 
