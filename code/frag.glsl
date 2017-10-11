@@ -147,14 +147,14 @@ void main()
             }
             LightDepth += DistInfo.Dist;
         }
-        if (distance(LightP + LightDepth * LightDirection, HitP) <= EPSILON*100.0)
+        if (distance(LightP + LightDepth * LightDirection, HitP) <= EPSILON*10.0)
         {
             Shadow = 0.0f;
         }
         
         vec3 Normal = Gradient(HitP);
         float AOFactor = GetOcclusionFactor(HitP, Normal);
-        float Intensity = AOFactor * (0.3 + (1.0-Shadow) * 0.7*max(dot(Normal, -LightDirection), 0.0));
+        float Intensity = AOFactor * 0.5 + (1.0-Shadow) * 0.5*max(dot(Normal, -LightDirection), 0.0);
         vec3 Color = RayColor * Intensity;
         
         //blend with sky color to emulate fog
@@ -166,4 +166,5 @@ void main()
     {
         OutColor = vec4(SkyColor, 1.0);
     }
-}
+    //OutColor.xyz = sqrt(OutColor.xyz);
+        }
