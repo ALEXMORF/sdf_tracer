@@ -9,8 +9,8 @@ TODO:
  . Hotload shader
  
 (CODE)
-. Ambient Occlusion by sampling SDF along normal
 . Soft Shadow by SDF from light caster
+. Profile by using iteration-based coloring
 . Lift view-ray computation up to vertex shader???
 . Have shapes other than sphere
 . Have it so objects have their own color

@@ -69,6 +69,22 @@ vec3 Gradient(vec3 P)
                           SDTS(vec3(P.x, P.y, P.z + EPSILON)) - SDTS(vec3(P.x, P.y, P.z - EPSILON))));
 }
 
+float
+GetOcclusionFactor(vec3 P, vec3 Normal)
+{
+    float AORadiusDelta = 0.3f;
+    
+    float AOFactor = 1.0;
+    for (int I = 1; I <= 5; ++I)
+    {
+        float SampleDist = AORadiusDelta * float(I);
+        float Diff = SampleDist - SignedDistanceToScene(P + Normal * SampleDist);
+        AOFactor -= (1.0 / pow(2, float(I))) * Diff;
+    }
+    
+    return AOFactor;
+}
+
 void main()
 {
     vec3 LightDir = vec3(0.0, 0.0, 1.0);
@@ -95,8 +111,10 @@ void main()
     
     if (RayHit)
     {
-        vec3 Normal = Gradient(CameraP + Depth * ViewRay);
-        float Intensity = 0.3 + 0.7*max(dot(Normal, -LightDirection), 0.0);
+        vec3 HitP = CameraP + Depth * ViewRay;
+        vec3 Normal = Gradient(HitP);
+        float AOFactor = GetOcclusionFactor(HitP, Normal);
+        float Intensity = AOFactor * (0.3 + 0.7*max(dot(Normal, -LightDirection), 0.0));
         vec3 Color = vec3(1.0, 0.0, 0.0) * Intensity;
         OutColor = vec4(Color, 1.0);
     }
