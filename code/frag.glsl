@@ -72,7 +72,7 @@ vec3 Gradient(vec3 P)
 float
 GetOcclusionFactor(vec3 P, vec3 Normal)
 {
-    float AORadiusDelta = 0.3f;
+    float AORadiusDelta = 0.2f;
     
     float AOFactor = 1.0;
     for (int I = 1; I <= 5; ++I)
@@ -115,7 +115,7 @@ void main()
         vec3 Normal = Gradient(HitP);
         float AOFactor = GetOcclusionFactor(HitP, Normal);
         float Intensity = AOFactor * (0.3 + 0.7*max(dot(Normal, -LightDirection), 0.0));
-        vec3 Color = vec3(1.0, 0.0, 0.0) * Intensity;
+        vec3 Color = vec3(0.8, 0.8, 0.8) * Intensity;
         OutColor = vec4(Color, 1.0);
     }
     else
