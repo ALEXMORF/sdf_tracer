@@ -9,11 +9,9 @@ TODO:
  . Hotload shader
  
 (CODE)
-. Have shapes other than sphere (cubes)
 . Soft Shadow by SDF from light caster
 . Profile by using iteration-based coloring
 . Integrate IMGUI into this project
-. Have it so objects have their own color
 . Lift view-ray computation up to vertex shader???
 . Global illumination with monte carl integration ???
 
@@ -35,7 +33,8 @@ UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height,
         GameState->Renderer.ShaderProgram = BuildShaderProgram(
             "../code/vert.glsl", 
             "../code/frag.glsl");
-        GameState->LightDirection = Normalize(V3(0.0f, -0.5f, 0.7f));
+        
+        GameState->LightDirection = Normalize(V3(0.3f, -0.5f, 0.7f));
         GameState->CameraP = {-2.0f, 3.0f, -5.0f};
         
         GameState->IsInitialized = true;
@@ -53,9 +52,9 @@ UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height,
     renderer *Renderer = &GameState->Renderer;
     BeginRender(Renderer, Width, Height, GameState->CameraP, GameState->LightDirection);
     DrawSphere(Renderer, V3(1.0f * sinf(Time), 1.0f, 1.0f * cosf(Time)), 1.0f,
-               V3(0.8f, 0.8f, 0.8f));
+               V3(0.5f, 0.8f, 0.8f));
     DrawBox(Renderer, V3(3.0f, 0.5f, 0.0f), V3(1.0f, 1.0f, 1.0f),
-            V3(0.8f, 0.8f, 0.8f));
+            V3(0.8f, 0.5f, 0.8f));
     DrawPlane(Renderer, V3(0.0f, 0.0f, 0.0f), V3(0.0f, 1.0f, 0.0f),
               V3(1.0f, 1.0f, 1.0f));
     EndRender(Renderer);
