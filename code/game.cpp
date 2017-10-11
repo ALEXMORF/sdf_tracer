@@ -55,11 +55,11 @@ UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height,
     renderer *Renderer = &GameState->Renderer;
     BeginRender(Renderer, Width, Height, GameState->CameraP, GameState->LightDirection);
     DrawSphere(Renderer, V3(1.0f * sinf(Time), 1.0f, 1.0f * cosf(Time)), 1.0f,
-               V3(0.3f, 0.3f, 0.7f));
+               V3(0.7f, 0.7f, 0.7f));
     DrawBox(Renderer, V3(3.0f, 0.5f, 0.0f), V3(1.0f, 1.0f, 1.0f),
-            V3(0.8f, 0.5f, 0.8f));
+            V3(0.6f, 0.6f, 0.6f));
     DrawBox(Renderer, V3(2.0f, 0.5f, 2.5f), V3(1.0f, 1.0f, 1.0f),
-            V3(0.8f, 0.5f, 0.8f));
+            V3(0.6f, 0.6f, 0.6f));
     DrawPlane(Renderer, V3(0.0f, 0.0f, 0.0f), V3(0.0f, 1.0f, 0.0f),
               V3(1.0f, 1.0f, 1.0f));
     EndRender(Renderer);
