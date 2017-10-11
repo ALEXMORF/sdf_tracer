@@ -82,29 +82,39 @@ BeginRender(renderer *RS, int Width, int  Height, v3 CameraP, v3 LightDirection)
 }
 
 inline shape *
-PushShape(renderer *RS)
+PushShape(renderer *RS, v3 Color)
 {
     ASSERT(RS->ShapeCount < ARRAY_COUNT(RS->Shapes));
     shape *NewShape = RS->Shapes + RS->ShapeCount++;
+    NewShape->Color = Color;
     return NewShape;
 }
 
 inline void
-DrawSphere(renderer *RS, v3 P, f32 Radius)
+DrawSphere(renderer *RS, v3 P, f32 Radius, v3 Color)
 {
-    shape *NewShape = PushShape(RS);
+    shape *NewShape = PushShape(RS, Color);
     NewShape->Type = SHAPE_TYPE_SPHERE;
     NewShape->AsSphere.P = P;
     NewShape->AsSphere.Radius = Radius;
 }
 
 inline void
-DrawPlane(renderer *RS, v3 P, v3 Normal)
+DrawPlane(renderer *RS, v3 P, v3 Normal, v3 Color)
 {
-    shape *NewShape = PushShape(RS);
+    shape *NewShape = PushShape(RS, Color);
     NewShape->Type = SHAPE_TYPE_PLANE;
     NewShape->AsPlane.P = P;
     NewShape->AsPlane.Normal = Normal;
+}
+
+inline void
+DrawBox(renderer *RS, v3 P, v3 Dim, v3 Color)
+{
+    shape *NewShape = PushShape(RS, Color);
+    NewShape->Type = SHAPE_TYPE_BOX;
+    NewShape->AsBox.P = P;
+    NewShape->AsBox.Dim = Dim;
 }
 
 internal void
@@ -119,6 +129,9 @@ EndRender(renderer *RS)
         snprintf(UniformID, sizeof(UniformID), "Shapes[%d].Type", ShapeIndex);
         glUploadInt32(RS->ShaderProgram, UniformID, Shape->Type);
         
+        snprintf(UniformID, sizeof(UniformID), "Shapes[%d].Color", ShapeIndex);
+        glUploadVec3(RS->ShaderProgram, UniformID, Shape->Color);
+        
         switch (Shape->Type)
         {
             case SHAPE_TYPE_SPHERE:
@@ -128,6 +141,15 @@ EndRender(renderer *RS)
                 
                 snprintf(UniformID, sizeof(UniformID), "Shapes[%d].Radius", ShapeIndex);
                 glUploadFloat(RS->ShaderProgram, UniformID, Shape->AsSphere.Radius);
+            } break;
+            
+            case SHAPE_TYPE_BOX:
+            {
+                snprintf(UniformID, sizeof(UniformID), "Shapes[%d].P", ShapeIndex);
+                glUploadVec3(RS->ShaderProgram, UniformID, Shape->AsBox.P);
+                
+                snprintf(UniformID, sizeof(UniformID), "Shapes[%d].Dim", ShapeIndex);
+                glUploadVec3(RS->ShaderProgram, UniformID, Shape->AsBox.Dim);
             } break;
             
             case SHAPE_TYPE_PLANE:

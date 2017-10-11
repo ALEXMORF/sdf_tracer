@@ -2,13 +2,16 @@
 
 #define SHAPE_TYPE_SPHERE 0
 #define SHAPE_TYPE_PLANE  1
+#define SHAPE_TYPE_BOX  2
 
 struct shape
 {
     int Type;
+    vec3 Color;
     
     vec3 P;
     vec3 Normal;
+    vec3 Dim;
     float Radius;
 };
 
@@ -30,9 +33,16 @@ const float EPSILON = 0.001;
 const float MAX_MARCH_STEP = 200;
 const float MAX_DEPTH = 100;
 
-float SignedDistanceToScene(vec3 P)
+struct distance_info
+{
+    float Dist;
+    vec3 Color;
+};
+
+distance_info SignedDistanceToScene(vec3 P)
 {
     float MinDistance = MAX_DEPTH;
+    vec3  MinDistanceColor;
     
     for (int ShapeIndex = 0; ShapeIndex < ShapeCount; ++ShapeIndex)
     {
@@ -47,19 +57,27 @@ float SignedDistanceToScene(vec3 P)
         {
             DistanceToShape = dot((P - Shapes[ShapeIndex].P), Shapes[ShapeIndex].Normal);
         }
+        else if (Shapes[ShapeIndex].Type == SHAPE_TYPE_BOX)
+        {
+            DistanceToShape = length(max(abs(P - Shapes[ShapeIndex].P)-Shapes[ShapeIndex].Dim, 0.0));
+        }
         
         if (DistanceToShape < MinDistance)
         {
             MinDistance = DistanceToShape;
+            MinDistanceColor = Shapes[ShapeIndex].Color;
         }
     }
     
-    return MinDistance;
+    distance_info Result;
+    Result.Dist = MinDistance;
+    Result.Color = MinDistanceColor;
+    return Result;
 }
 
 float SDTS(vec3 P)
 {
-    return SignedDistanceToScene(P);
+    return SignedDistanceToScene(P).Dist;
 }
 
 vec3 Gradient(vec3 P)
@@ -78,7 +96,7 @@ GetOcclusionFactor(vec3 P, vec3 Normal)
     for (int I = 1; I <= 5; ++I)
     {
         float SampleDist = AORadiusDelta * float(I);
-        float Diff = SampleDist - SignedDistanceToScene(P + Normal * SampleDist);
+        float Diff = SampleDist - SignedDistanceToScene(P + Normal * SampleDist).Dist;
         AOFactor -= (1.0 / pow(2, float(I))) * Diff;
     }
     
@@ -98,15 +116,17 @@ void main()
     
     bool RayHit = false;
     float Depth = 0.0;
+    vec3 RayColor;
     for (int I = 0; I < MAX_MARCH_STEP && Depth < MAX_DEPTH; ++I)
     {
-        float Dist = SignedDistanceToScene(CameraP + Depth * ViewRay);
-        if (Dist < EPSILON)
+        distance_info DistInfo = SignedDistanceToScene(CameraP + Depth * ViewRay);
+        if (DistInfo.Dist < EPSILON)
         {
+            RayColor = DistInfo.Color;
             RayHit = true;
             break;
         }
-        Depth += Dist;
+        Depth += DistInfo.Dist;
     }
     
     if (RayHit)
@@ -115,7 +135,7 @@ void main()
         vec3 Normal = Gradient(HitP);
         float AOFactor = GetOcclusionFactor(HitP, Normal);
         float Intensity = AOFactor * (0.3 + 0.7*max(dot(Normal, -LightDirection), 0.0));
-        vec3 Color = vec3(0.8, 0.8, 0.8) * Intensity;
+        vec3 Color = RayColor * Intensity;
         OutColor = vec4(Color, 1.0);
     }
     else
@@ -123,4 +143,3 @@ void main()
         OutColor = vec4(0.0, 1.0, 1.0, 1.0);
     }
 }
-

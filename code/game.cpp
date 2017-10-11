@@ -9,9 +9,9 @@ TODO:
  . Hotload shader
  
 (CODE)
+. Have shapes other than sphere (cubes)
 . Soft Shadow by SDF from light caster
 . Profile by using iteration-based coloring
-. Have shapes other than sphere
 . Integrate IMGUI into this project
 . Have it so objects have their own color
 . Lift view-ray computation up to vertex shader???
@@ -52,8 +52,12 @@ UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height,
     
     renderer *Renderer = &GameState->Renderer;
     BeginRender(Renderer, Width, Height, GameState->CameraP, GameState->LightDirection);
-    DrawSphere(Renderer, V3(2.0f * sinf(Time), 1.0f, 2.0f * cosf(Time)), 1.0f);
-    DrawPlane(Renderer, V3(0.0f, 0.0f, 0.0f), V3(0.0f, 1.0f, 0.0f));
+    DrawSphere(Renderer, V3(1.0f * sinf(Time), 1.0f, 1.0f * cosf(Time)), 1.0f,
+               V3(0.8f, 0.8f, 0.8f));
+    DrawBox(Renderer, V3(3.0f, 0.5f, 0.0f), V3(1.0f, 1.0f, 1.0f),
+            V3(0.8f, 0.8f, 0.8f));
+    DrawPlane(Renderer, V3(0.0f, 0.0f, 0.0f), V3(0.0f, 1.0f, 0.0f),
+              V3(1.0f, 1.0f, 1.0f));
     EndRender(Renderer);
     
     glFinish(); //force opengl sychronize to measure performance
