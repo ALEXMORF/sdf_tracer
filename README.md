@@ -8,3 +8,4 @@ Hello World, 10/2/2017:
 
 Geometry Union & Fast Ambient Occlusion, 10/10/2017:
 
+![image](https://user-images.githubusercontent.com/16845654/31416715-de25ac92-addf-11e7-9063-6e76f776aa30.png)
