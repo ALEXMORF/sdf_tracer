@@ -10,6 +10,7 @@ TODO:
  
 (CODE)
 . Soft Shadow by SDF from light caster
+. move shaders back into code so that main.exe can be executed standalone?
 . Can we do GI color-bleeding using the fake AO scheme?
 . Profile by using iteration-based coloring
 . Integrate IMGUI into this project
