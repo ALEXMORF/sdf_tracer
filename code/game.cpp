@@ -10,6 +10,7 @@ TODO:
  
 (CODE)
 . Soft Shadow by SDF from light caster
+. Can we do GI color-bleeding using the fake AO scheme?
 . Profile by using iteration-based coloring
 . Integrate IMGUI into this project
 . Lift view-ray computation up to vertex shader???
