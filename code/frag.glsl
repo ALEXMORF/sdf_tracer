@@ -24,7 +24,7 @@ uniform shape[50] Shapes;
 uniform int ShapeCount;
 
 in vec2 FragTexCoord;
-out vec4 OutColor;
+out vec3 OutColor;
 
 const float FOV = 45.0;
 const float HFOV = FOV * 0.5;
@@ -106,7 +106,7 @@ GetOcclusionFactor(vec3 P, vec3 Normal)
 void main()
 {
     vec3 LightDir = vec3(0.0, 0.0, 1.0);
-    vec3 SkyColor = vec3(0.0, 0.0, 0.0);
+    vec3 SkyColor = vec3(0.22, 0.34, 0.42);
     
     vec3 ViewRay;
     ViewRay.x = (ScreenSize.x / ScreenSize.y) * (FragTexCoord.x - 0.5);
@@ -134,9 +134,12 @@ void main()
     {
         vec3 HitP = CameraP + Depth * ViewRay;
         
+#if 0
+        float Shadow = 0.0;
+#else
         //compute shadow (visibility)
-        float Shadow = 1.0f;
-        vec3 LightP = HitP - LightDirection * 5.0f;
+        float Shadow = 1.0;
+        vec3 LightP = HitP - LightDirection * 5.0;
         float LightDepth = 0.0;
         for (int I = 0; I < MAX_MARCH_STEP && LightDepth < MAX_DEPTH; ++I)
         {
@@ -147,10 +150,11 @@ void main()
             }
             LightDepth += DistInfo.Dist;
         }
-        if (distance(LightP + LightDepth * LightDirection, HitP) <= EPSILON*10.0)
+        if (distance(LightP + LightDepth * LightDirection, HitP) <= EPSILON*20.0)
         {
             Shadow = 0.0f;
         }
+#endif
         
         vec3 Normal = Gradient(HitP);
         float AOFactor = GetOcclusionFactor(HitP, Normal);
@@ -159,12 +163,11 @@ void main()
         
         //blend with sky color to emulate fog
         float DepthPercent = (MAX_DEPTH - Depth) / MAX_DEPTH;
-        OutColor = (DepthPercent * vec4(Color, 1.0) + 
-                    (1.0 - DepthPercent) * vec4(SkyColor, 1.0));
+        OutColor = mix(Color, SkyColor, 1.0-DepthPercent);
     }
     else
     {
-        OutColor = vec4(SkyColor, 1.0);
+        OutColor = SkyColor;
     }
-    //OutColor.xyz = sqrt(OutColor.xyz);
-        }
+    OutColor = sqrt(OutColor);
+            }

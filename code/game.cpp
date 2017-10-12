@@ -9,7 +9,8 @@ TODO:
  . Hotload shader
  
 (CODE)
-. Soft Shadow by SDF from light caster
+. Realistic fog: http://www.iquilezles.org/www/articles/fog/fog.htm
+. Soft Shadow by SDF from light caster: http://www.iquilezles.org/www/articles/rmshadows/rmshadows.htm
 . Phong lighting
 . move shaders back into code so that main.exe can be executed standalone?
 . Can we do GI color-bleeding using the fake AO scheme?
@@ -58,7 +59,7 @@ UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height,
                V3(0.7f, 0.7f, 0.7f));
     DrawBox(Renderer, V3(3.0f, 0.5f, 0.0f), V3(1.0f, 1.0f, 1.0f),
             V3(0.6f, 0.6f, 0.6f));
-    DrawBox(Renderer, V3(2.0f, 0.5f, 2.5f), V3(1.0f, 1.0f, 1.0f),
+    DrawBox(Renderer, V3(2.0f, 0.5f, 3.0f), V3(1.0f, 1.0f, 1.0f),
             V3(0.6f, 0.6f, 0.6f));
     DrawPlane(Renderer, V3(0.0f, 0.0f, 0.0f), V3(0.0f, 1.0f, 0.0f),
               V3(1.0f, 1.0f, 1.0f));
