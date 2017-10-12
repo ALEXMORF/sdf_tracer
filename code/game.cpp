@@ -63,7 +63,7 @@ UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height,
     DrawBox(Renderer, V3(2.0f, 0.5f, 3.0f), V3(1.0f, 1.0f, 1.0f),
             V3(0.6f, 0.6f, 0.6f));
     DrawPlane(Renderer, V3(0.0f, 0.0f, 0.0f), V3(0.0f, 1.0f, 0.0f),
-              V3(1.0f, 1.0f, 1.0f));
+              V3(0.8f, 0.8f, 0.8f));
     EndRender(Renderer);
     
     glFinish(); //force opengl sychronize to measure performance

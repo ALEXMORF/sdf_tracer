@@ -111,7 +111,7 @@ GetOcclusionFactor(vec3 P, vec3 Normal)
 void main()
 {
     vec3 LightDir = vec3(0.0, 0.0, 1.0);
-    vec3 SkyColor = vec3(0.22, 0.34, 0.42);
+    vec3 SkyColor = vec3(1.0, 1.0, 1.0);//vec3(0.22, 0.34, 0.42);
     
     vec3 ViewRay;
     ViewRay.x = (ScreenSize.x / ScreenSize.y) * (FragTexCoord.x - 0.5);
@@ -177,7 +177,11 @@ void main()
 #endif
         
         vec3 Normal = Gradient(HitP);
+#if 1
         float AOFactor = GetOcclusionFactor(HitP, Normal);
+#else
+        float AOFactor = 1.0;
+#endif
         float Intensity = AOFactor * 0.5 + Visibility * 0.5*max(dot(Normal, -LightDirection), 0.0);
         vec3 Color = RayColor * Intensity;
         
