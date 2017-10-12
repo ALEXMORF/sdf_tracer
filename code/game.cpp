@@ -9,6 +9,7 @@ TODO:
  . Hotload shader
  
 (CODE)
+. Optimize the light raymarching, since we already know its maximum span in advance
 . Realistic fog: http://www.iquilezles.org/www/articles/fog/fog.htm
 . Soft Shadow by SDF from light caster: http://www.iquilezles.org/www/articles/rmshadows/rmshadows.htm
 . Phong lighting
