@@ -9,10 +9,7 @@ TODO:
  . Hotload shader
  
 (CODE)
-. Optimize the light raymarching, since we already know its maximum span in advance
-. Lift view-ray computation up to vertex shader???
 . Realistic fog: http://www.iquilezles.org/www/articles/fog/fog.htm
-. Soft Shadow by SDF from light caster: http://www.iquilezles.org/www/articles/rmshadows/rmshadows.htm
 . Phong lighting
 . move shaders back into code so that main.exe can be executed standalone?
 . Can we do GI color-bleeding using the fake AO scheme?

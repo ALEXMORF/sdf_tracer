@@ -24,10 +24,8 @@ uniform shape[50] Shapes;
 uniform int ShapeCount;
 
 in vec2 FragTexCoord;
+in vec3 FragViewRay;
 out vec3 OutColor;
-
-const float FOV = 45.0;
-const float HFOV = FOV * 0.5;
 
 const float EPSILON = 0.001;
 const float MAX_MARCH_STEP = 200;
@@ -112,13 +110,7 @@ void main()
 {
     vec3 LightDir = vec3(0.0, 0.0, 1.0);
     vec3 SkyColor = vec3(1.0, 1.0, 1.0);//vec3(0.22, 0.34, 0.42);
-    
-    vec3 ViewRay;
-    ViewRay.x = (ScreenSize.x / ScreenSize.y) * (FragTexCoord.x - 0.5);
-    ViewRay.y = FragTexCoord.y - 0.5;
-    ViewRay.z = 0.5 / tan(radians(HFOV));
-    ViewRay = normalize(ViewRay);
-    ViewRay = ViewRay * inverse(mat3(ViewRotation));
+    vec3 ViewRay = normalize(FragViewRay);
     
     bool RayHit = false;
     float Depth = 0.0;
