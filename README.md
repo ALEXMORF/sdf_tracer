@@ -8,4 +8,4 @@ Hello World, 10/2/2017:
 
 Multicolor, Fog, Fast Ambient Occlusion and Sharp Shadow, 10/10/2017:
 
-![image](https://user-images.githubusercontent.com/16845654/31423429-947f31ce-ae09-11e7-82f7-6eeee37b488a.png)
+![image](https://user-images.githubusercontent.com/16845654/31481295-7ef8ebdc-aed7-11e7-824a-e56c65f9c905.png)
