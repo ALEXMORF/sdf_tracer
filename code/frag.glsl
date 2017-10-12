@@ -145,8 +145,10 @@ void main()
         //compute shadow (visibility)
         float Visibility = 1.0;
         float LightDist = 5.0;
+        float SharpShadowFactor = 4.0;
+        float DepthBias = 20*EPSILON;
         vec3 LightP = HitP - LightDirection * LightDist;
-        for (float LightDepth = 0.0; LightDepth < LightDist-10*EPSILON;)
+        for (float LightDepth = 0.0; LightDepth < LightDist-DepthBias;)
         {
             distance_info DistInfo = SignedDistanceToScene(LightP + LightDepth * LightDirection);
             if (DistInfo.Dist < EPSILON)
@@ -154,6 +156,7 @@ void main()
                 Visibility = 0.0;
                 break;
             }
+            Visibility = min(Visibility, SharpShadowFactor * DistInfo.Dist / (LightDist-LightDepth));
             LightDepth += DistInfo.Dist;
         }
         
