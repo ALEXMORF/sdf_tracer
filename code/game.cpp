@@ -10,6 +10,7 @@ TODO:
  
 (CODE)
 . Optimize the light raymarching, since we already know its maximum span in advance
+. Lift view-ray computation up to vertex shader???
 . Realistic fog: http://www.iquilezles.org/www/articles/fog/fog.htm
 . Soft Shadow by SDF from light caster: http://www.iquilezles.org/www/articles/rmshadows/rmshadows.htm
 . Phong lighting
@@ -17,7 +18,6 @@ TODO:
 . Can we do GI color-bleeding using the fake AO scheme?
 . Profile by using iteration-based coloring
 . Integrate IMGUI into this project
-. Lift view-ray computation up to vertex shader???
 . Global illumination with monte carl integration ???
 
 */
