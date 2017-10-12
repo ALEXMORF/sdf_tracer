@@ -31,13 +31,18 @@ const float HFOV = FOV * 0.5;
 
 const float EPSILON = 0.001;
 const float MAX_MARCH_STEP = 200;
-const float MAX_DEPTH = 20;
+const float MAX_DEPTH = 50;
 
 struct distance_info
 {
     float Dist;
     vec3 Color;
 };
+
+float Square(float T)
+{
+    return T*T;
+}
 
 distance_info SignedDistanceToScene(vec3 P)
 {
@@ -163,7 +168,7 @@ void main()
         
         //blend with sky color to emulate fog
         float DepthPercent = (MAX_DEPTH - Depth) / MAX_DEPTH;
-        OutColor = mix(Color, SkyColor, 1.0-DepthPercent);
+        OutColor = mix(Color, SkyColor, pow(1.0-DepthPercent, 2));
     }
     else
     {
