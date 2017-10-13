@@ -9,11 +9,15 @@ TODO:
  . Hotload shader
  
 (CODE)
-. move shaders back into code so that main.exe can be executed standalone?
-. Can we do GI color-bleeding using the fake AO scheme?
+
+. Our current renderer API is too restricting, abandon it and adapt new method
+. Shape blending
 . Profile by using iteration-based coloring
 . Integrate IMGUI into this project
 . Global illumination with monte carl integration ???
+
+(FINAL)
+. Move shaders back into code so that main.exe can be executed standalone?
 
 */
 
@@ -51,13 +55,15 @@ UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height,
     
     renderer *Renderer = &GameState->Renderer;
     BeginRender(Renderer, Width, Height, GameState->CameraP, GameState->LightDirection);
-    DrawSphere(Renderer, V3(1.0f * sinf(Time), 1.0f, 1.0f * cosf(Time)), 
+    DrawSphere(Renderer, V3(0.0f, 1.0f, 0.0), 
                0.8f + 0.2f*sinf(2.0f*Time),
                V3(0.7f, 0.7f, 0.7f));
+#if 0
     DrawBox(Renderer, V3(3.0f, 0.5f, 0.0f), V3(1.0f, 1.0f, 1.0f),
             V3(0.6f, 0.6f, 0.6f));
     DrawBox(Renderer, V3(2.0f, 0.5f, 3.0f), V3(1.0f, 1.0f, 1.0f),
             V3(0.6f, 0.6f, 0.6f));
+#endif
     DrawPlane(Renderer, V3(0.0f, 0.0f, 0.0f), V3(0.0f, 1.0f, 0.0f),
               V3(0.8f, 0.8f, 0.8f));
     EndRender(Renderer);

@@ -29,7 +29,7 @@ out vec3 OutColor;
 
 const float EPSILON = 0.001;
 const float MAX_MARCH_STEP = 200;
-const float MAX_DEPTH = 30;
+const float MAX_DEPTH = 200;
 
 struct distance_info
 {
@@ -53,6 +53,8 @@ distance_info SignedDistanceToScene(vec3 P)
         
         if (Shapes[ShapeIndex].Type == SHAPE_TYPE_SPHERE)
         {
+            float InstanceDist = 2.2;
+            P.xz = mod(P.xz, InstanceDist) - 0.5*InstanceDist;
             DistanceToShape = (distance(P, Shapes[ShapeIndex].P) - 
                                Shapes[ShapeIndex].Radius);
         }
@@ -114,6 +116,7 @@ void main()
     
     bool RayHit = false;
     float Depth = 0.0;
+    int MarchStepCount = 0;
     vec3 RayColor;
     for (int I = 0; I < MAX_MARCH_STEP && Depth < MAX_DEPTH; ++I)
     {
@@ -121,6 +124,7 @@ void main()
         if (DistInfo.Dist < EPSILON)
         {
             RayColor = DistInfo.Color;
+            MarchStepCount = I;
             RayHit = true;
             break;
         }
