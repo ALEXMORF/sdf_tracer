@@ -10,6 +10,7 @@ TODO:
  
 (CODE)
 
+. Bring back specular highlight
 . Our current renderer API is too restricting, abandon it and adapt new method
 . Shape blending
 . Profile by using iteration-based coloring
