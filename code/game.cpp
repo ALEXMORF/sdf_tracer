@@ -9,8 +9,6 @@ TODO:
  . Hotload shader
  
 (CODE)
-. Realistic fog: http://www.iquilezles.org/www/articles/fog/fog.htm
-. Phong lighting
 . move shaders back into code so that main.exe can be executed standalone?
 . Can we do GI color-bleeding using the fake AO scheme?
 . Profile by using iteration-based coloring
@@ -53,7 +51,8 @@ UpdateAndRender(void *Memory, u32 MemorySize, int Width, int Height,
     
     renderer *Renderer = &GameState->Renderer;
     BeginRender(Renderer, Width, Height, GameState->CameraP, GameState->LightDirection);
-    DrawSphere(Renderer, V3(1.0f * sinf(Time), 1.0f, 1.0f * cosf(Time)), 1.0f,
+    DrawSphere(Renderer, V3(1.0f * sinf(Time), 1.0f, 1.0f * cosf(Time)), 
+               0.8f + 0.2f*sinf(2.0f*Time),
                V3(0.7f, 0.7f, 0.7f));
     DrawBox(Renderer, V3(3.0f, 0.5f, 0.0f), V3(1.0f, 1.0f, 1.0f),
             V3(0.6f, 0.6f, 0.6f));

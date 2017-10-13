@@ -62,7 +62,7 @@ distance_info SignedDistanceToScene(vec3 P)
         }
         else if (Shapes[ShapeIndex].Type == SHAPE_TYPE_BOX)
         {
-            DistanceToShape = length(max(abs(P - Shapes[ShapeIndex].P)-Shapes[ShapeIndex].Dim, 0.0));
+            DistanceToShape = length(max(abs(P - Shapes[ShapeIndex].P)-Shapes[ShapeIndex].Dim, 0.0))-0.1;
         }
         
         if (DistanceToShape < MinDistance)
@@ -151,33 +151,13 @@ void main()
             Visibility = min(Visibility, SharpShadowFactor * DistInfo.Dist / (LightDist-LightDepth));
             LightDepth += DistInfo.Dist;
         }
-        
-        /*
-                float LightDepth = 0.0;
-                
-                for (int I = 0; I < MAX_MARCH_STEP && LightDepth < MAX_DEPTH; ++I)
-                {
-                    distance_info DistInfo = SignedDistanceToScene(LightP + LightDepth * LightDirection);
-                    if (DistInfo.Dist < EPSILON)
-                    {
-                        break;
-                    }
-                    LightDepth += DistInfo.Dist;
-                }
-                if (distance(LightP + LightDepth * LightDirection, HitP) <= EPSILON*20.0)
-                {
-                    Shadow = 0.0f;
-                }
-        */
 #endif
         
         vec3 Normal = Gradient(HitP);
-#if 1
         float AOFactor = GetOcclusionFactor(HitP, Normal);
-#else
-        float AOFactor = 1.0;
-#endif
-        float Intensity = AOFactor * 0.5 + Visibility * 0.5*max(dot(Normal, -LightDirection), 0.0);
+        float Ambient = AOFactor * 0.4;
+        float Diffuse = 0.6 * Visibility * max(dot(Normal, -LightDirection), 0.0);
+        float Intensity = Ambient + Diffuse;
         vec3 Color = RayColor * Intensity;
         
         //blend with sky color to emulate fog
