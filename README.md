@@ -14,3 +14,7 @@ Multicolor, Fog, Fast Ambient Occlusion and Sharp Shadow, 10/10/2017:
 Penumbra Shadow, 10/11/2017:
 
 ![image](https://user-images.githubusercontent.com/16845654/31523733-303244b0-af6a-11e7-8fce-db453357b29c.png)
+
+Infinite Geometry Instances, 10/13/2017:
+
+![image](https://user-images.githubusercontent.com/16845654/31566253-9b487f62-b01e-11e7-9876-427bae5530f3.png)
