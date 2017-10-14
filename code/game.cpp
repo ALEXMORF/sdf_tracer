@@ -8,8 +8,7 @@ TODO:
 
 . Hotload shader
 . Handle shader error
-  . Bring back specular highlight
-. Our current renderer API is too restricting, abandon it and adapt new method
+  . Our current renderer API is too restricting, abandon it and adapt new method
 . Shape blending
 . Profile by using iteration-based coloring
 . Integrate IMGUI into this project
