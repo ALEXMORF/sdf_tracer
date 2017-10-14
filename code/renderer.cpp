@@ -26,7 +26,7 @@ ReadAndCompileShader(char *Path, GLenum Type)
         GLchar ErrorMsg[1024];
         glGetShaderInfoLog(Shader, sizeof(ErrorMsg), 
                            &ErrorMsgLength, ErrorMsg);
-        ASSERT(!"fail to compile vertex shader");
+        ASSERT(!"fail to compile current shader");
     }
     
     return Shader;

@@ -19,6 +19,7 @@ uniform vec2 ScreenSize;
 uniform vec3 LightDirection;
 uniform vec3 CameraP;
 uniform mat4 ViewRotation;
+uniform mat4 ShapeRotation;
 
 uniform shape[50] Shapes;
 uniform int ShapeCount;
@@ -27,9 +28,9 @@ in vec2 FragTexCoord;
 in vec3 FragViewRay;
 out vec3 OutColor;
 
-const float EPSILON = 0.001;
+const float EPSILON = 0.01;
 const float MAX_MARCH_STEP = 200;
-const float MAX_DEPTH = 200;
+const float MAX_DEPTH = 50;
 
 struct distance_info
 {
@@ -40,6 +41,32 @@ struct distance_info
 float Square(float T)
 {
     return T*T;
+}
+
+float SignedDistanceToTetrahedron(vec3 P)
+{
+    P.y -= 3.0;
+    const int Iterations = 8;
+    const float Scale = 2.0;
+    
+    vec3 V1 = vec3(1, 1, 1);
+    vec3 V2 = vec3(-1, -1, 1);
+    vec3 V3 = vec3(1, -1, -1);
+    vec3 V4 = vec3(-1, 1, -1);
+    vec3 C;
+    int N = 0;
+    float Dist, D;
+    while (N < Iterations)
+    {
+        C = V1; Dist = distance(P, V1);
+        D = distance(P, V2); if (D < Dist) { C = V2; Dist = D; }
+        D = distance(P, V3); if (D < Dist) { C = V3; Dist = D; }
+        D = distance(P, V4); if (D < Dist) { C = V4; Dist = D; }
+        P = Scale*P - C*(Scale - 1.0);
+        ++N;
+    }
+    
+    return length(P) * pow(Scale, float(-N));
 }
 
 distance_info SignedDistanceToScene(vec3 P)
@@ -53,8 +80,6 @@ distance_info SignedDistanceToScene(vec3 P)
         
         if (Shapes[ShapeIndex].Type == SHAPE_TYPE_SPHERE)
         {
-            float InstanceDist = 2.2;
-            P.xz = mod(P.xz, InstanceDist) - 0.5*InstanceDist;
             DistanceToShape = (distance(P, Shapes[ShapeIndex].P) - 
                                Shapes[ShapeIndex].Radius);
         }
@@ -77,6 +102,15 @@ distance_info SignedDistanceToScene(vec3 P)
     distance_info Result;
     Result.Dist = MinDistance;
     Result.Color = MinDistanceColor;
+    
+    float DistToTetrahedron = SignedDistanceToTetrahedron(P*inverse(mat3(ShapeRotation)));
+#if 1
+    if (Result.Dist > DistToTetrahedron)
+    {
+        Result.Dist = DistToTetrahedron;
+        Result.Color = vec3(0.8, 0.8, 0.8);
+    }
+#endif
     return Result;
 }
 
@@ -111,7 +145,7 @@ GetOcclusionFactor(vec3 P, vec3 Normal)
 void main()
 {
     vec3 LightDir = vec3(0.0, 0.0, 1.0);
-    vec3 SkyColor = vec3(1.0, 1.0, 1.0);//vec3(0.22, 0.34, 0.42);
+    vec3 SkyColor = vec3(1.0, 1.0, 1.0);
     vec3 ViewRay = normalize(FragViewRay);
     
     bool RayHit = false;
@@ -161,7 +195,9 @@ void main()
         float AOFactor = GetOcclusionFactor(HitP, Normal);
         float Ambient = AOFactor * 0.4;
         float Diffuse = 0.6 * Visibility * max(dot(Normal, -LightDirection), 0.0);
-        float Intensity = Ambient + Diffuse;
+        vec3 HalfVector = normalize(-ViewRay + -LightDirection);
+        float Specular = Visibility * pow(dot(HalfVector, Normal), 16);
+        float Intensity = Ambient + Diffuse + Specular;
         vec3 Color = RayColor * Intensity;
         
         //blend with sky color to emulate fog
