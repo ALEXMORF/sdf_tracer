@@ -49,19 +49,26 @@ float SignedDistanceToTetrahedron(vec3 P)
     const int Iterations = 8;
     const float Scale = 2.0;
     
-    vec3 V1 = vec3(1, 1, 1);
-    vec3 V2 = vec3(-1, -1, 1);
-    vec3 V3 = vec3(1, -1, -1);
-    vec3 V4 = vec3(-1, 1, -1);
+    const vec3 V1 = vec3(1, 1, 1);
+    const vec3 V2 = vec3(-1, -1, 1);
+    const vec3 V3 = vec3(1, -1, -1);
+    const vec3 V4 = vec3(-1, 1, -1);
     vec3 C;
     int N = 0;
     float Dist, D;
     while (N < Iterations)
     {
+        C = V1;
+#if 1
+        if (P.x + P.y < 0) P.xy = -P.yx; //fold 1
+        if (P.x + P.z < 0) P.xz = -P.zx; //fold 2
+        if (P.y + P.z < 0) P.yz = -P.zy; //fold 3
+#else
         C = V1; Dist = distance(P, V1);
         D = distance(P, V2); if (D < Dist) { C = V2; Dist = D; }
         D = distance(P, V3); if (D < Dist) { C = V3; Dist = D; }
         D = distance(P, V4); if (D < Dist) { C = V4; Dist = D; }
+#endif
         P = Scale*P - C*(Scale - 1.0);
         ++N;
     }
@@ -129,7 +136,7 @@ vec3 Gradient(vec3 P)
 float
 GetOcclusionFactor(vec3 P, vec3 Normal)
 {
-    float AORadiusDelta = 0.2f;
+    const float AORadiusDelta = 0.2f;
     
     float AOFactor = 1.0;
     for (int I = 1; I <= 5; ++I)
@@ -144,8 +151,8 @@ GetOcclusionFactor(vec3 P, vec3 Normal)
 
 void main()
 {
-    vec3 LightDir = vec3(0.0, 0.0, 1.0);
-    vec3 SkyColor = vec3(1.0, 1.0, 1.0);
+    const vec3 LightDir = vec3(0.0, 0.0, 1.0);
+    const vec3 SkyColor = vec3(1.0, 1.0, 1.0);
     vec3 ViewRay = normalize(FragViewRay);
     
     bool RayHit = false;
@@ -174,9 +181,9 @@ void main()
 #else
         //compute shadow (visibility)
         float Visibility = 1.0;
-        float LightDist = 5.0;
-        float SharpShadowFactor = 4.0;
-        float DepthBias = 20*EPSILON;
+        const float LightDist = 5.0;
+        const float SharpShadowFactor = 4.0;
+        const float DepthBias = 20*EPSILON;
         vec3 LightP = HitP - LightDirection * LightDist;
         for (float LightDepth = 0.0; LightDepth < LightDist-DepthBias;)
         {
