@@ -18,3 +18,7 @@ Penumbra Shadow, 10/11/2017:
 Infinite Geometry Instances, 10/13/2017:
 
 ![image](https://user-images.githubusercontent.com/16845654/31566253-9b487f62-b01e-11e7-9876-427bae5530f3.png)
+
+Tretrahedron fractal, 10/14/2017:
+
+![image](https://user-images.githubusercontent.com/16845654/31596455-83e0d132-b1f7-11e7-8a43-2af2338161cd.png)
